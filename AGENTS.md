@@ -5,10 +5,10 @@
 **This is a macOS-only application and cannot be built, run, or GUI-tested on the
 Linux Cloud Agent environment.**
 
-- `Snap` is a native **macOS 14+** menu-bar screenshot app built with Swift Package
-  Manager (`Package.swift`, executable target `SnapApp`). The minimum is macOS 14
-  because screenshot capture uses `SCScreenshotManager` (ScreenCaptureKit, 14+) and
-  SwiftUI `onChange(of:initial:)` (14+).
+- `Snap` is a native **macOS 15+** menu-bar screenshot app built with Swift Package
+  Manager (`Package.swift`, executable target `SnapApp`). The minimum is macOS 15
+  (Sequoia) and is optimized for **Apple Silicon only** (arm64). Screenshot capture
+  uses `SCScreenshotManager` (ScreenCaptureKit, 13+) and SwiftUI features.
 - Every source file imports Apple-only frameworks — `SwiftUI`, `AppKit`,
   `ScreenCaptureKit`, `CoreImage`, `Combine` — and the sole external dependency
   (`KeyboardShortcuts`) is also macOS-only. These frameworks do **not** exist in
