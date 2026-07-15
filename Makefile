@@ -36,8 +36,12 @@ app: build
 	@mkdir -p $(RESOURCES_DIR)
 	
 	@echo "📋 Copying executable..."
-	@cp $(BUILD_DIR)/apple/Products/Release/SnapApp $(MACOS_DIR)/$(APP_NAME) || \
-	 cp $(BUILD_DIR)/release/SnapApp $(MACOS_DIR)/$(APP_NAME)
+	@BIN=$$(swift build -c release --arch arm64 --show-bin-path)/SnapApp; \
+	 if [ ! -f "$$BIN" ]; then \
+	   BIN=$$(find $(BUILD_DIR) -type f -name SnapApp -perm -111 | head -1); \
+	 fi; \
+	 echo "Using binary: $$BIN"; \
+	 cp "$$BIN" $(MACOS_DIR)/$(APP_NAME)
 	
 	@echo "📋 Copying Info.plist..."
 	@cp SnapApp/Resources/Info.plist $(CONTENTS_DIR)/
