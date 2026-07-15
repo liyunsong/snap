@@ -38,27 +38,22 @@ jobs:
         run: |
           echo "Building Snap for arm64 (macOS 15)..."
           swift build -c release --arch arm64
-          swift build -c release --arch arm64 --show-bin-path
       
-      - name: Package (.app + ZIP + DMG)
+      - name: Package DMG
         run: |
-          make app
-          make zip
           make dmg
-          ls -lh .build/release/
+          ls -lh .build/release/Snap-*.dmg
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Snap-macOS-AppleSilicon
-          path: |
-            .build/release/Snap-*.zip
-            .build/release/Snap-*.dmg
+          path: .build/release/Snap-*.dmg
           retention-days: 30
       
       - name: Show download instructions
         run: |
           echo "Build completed!"
           echo "Download from: https://github.com/${{ github.repository }}/actions"
-          echo "Artifacts: Snap-*.zip and Snap-*.dmg"
-          ls -lh .build/release/Snap-*.zip .build/release/Snap-*.dmg
+          echo "Artifact: Snap-1.0.0.dmg"
+          ls -lh .build/release/Snap-*.dmg

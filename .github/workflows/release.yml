@@ -27,11 +27,8 @@ jobs:
       - name: Build for release
         run: swift build -c release --arch arm64
       
-      - name: Create .app, ZIP and DMG
-        run: |
-          make app
-          make zip
-          make dmg
+      - name: Create DMG
+        run: make dmg
       
       - name: Get version
         id: version
@@ -47,9 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Snap-${{ steps.version.outputs.VERSION }}
-          path: |
-            .build/release/Snap-*.zip
-            .build/release/Snap-*.dmg
+          path: .build/release/Snap-*.dmg
           retention-days: 30
       
       - name: Create Release
@@ -58,9 +53,7 @@ jobs:
         with:
           name: Snap ${{ steps.version.outputs.VERSION }}
           body_path: RELEASE_NOTES.md
-          files: |
-            .build/release/Snap-*.zip
-            .build/release/Snap-*.dmg
+          files: .build/release/Snap-*.dmg
           draft: false
           prerelease: false
         env:
