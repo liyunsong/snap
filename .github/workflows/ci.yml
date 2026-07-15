@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "cursor/**"
   pull_request:
   workflow_dispatch:
 
@@ -20,37 +21,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
-      - name: Show toolchain
+      - name: Select Xcode
         run: |
-          swift --version
+          sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode.app
           xcodebuild -version
+          swift --version
 
       - name: Resolve dependencies
         run: swift package resolve
 
-      - name: Build (release, universal binary)
-        run: swift build -c release --arch arm64 --arch x86_64
+      - name: Build (release, Apple Silicon)
+        run: swift build -c release --arch arm64
 
-      - name: Package (.app, ZIP, DMG)
+      - name: Package (.app + ZIP)
         run: |
           make app
           make zip
-          make dmg
 
       - name: List build artifacts
         run: ls -lh .build/release
 
-      - name: Upload installers
+      - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: Snap-macos-${{ github.sha }}
-          path: |
-            .build/release/Snap-*.zip
-            .build/release/Snap-*.dmg
+          name: Snap-macOS-AppleSilicon
+          path: .build/release/Snap-*.zip
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 30
