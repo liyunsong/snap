@@ -3,13 +3,14 @@
 
 APP_NAME = Snap
 BUNDLE_ID = com.snap.screenshot
-VERSION ?= 1.0.1
+VERSION ?= 1.0.2
 BUILD_DIR = .build
 RELEASE_DIR = $(BUILD_DIR)/release
 APP_DIR = $(RELEASE_DIR)/$(APP_NAME).app
 CONTENTS_DIR = $(APP_DIR)/Contents
 MACOS_DIR = $(CONTENTS_DIR)/MacOS
 RESOURCES_DIR = $(CONTENTS_DIR)/Resources
+FIRST_OPEN = scripts/first-open.command
 
 .PHONY: all clean build app dmg install help release verify-app
 
@@ -27,7 +28,7 @@ help:
 	@echo "  make release   - Build app + DMG"
 	@echo ""
 	@echo "Variables:"
-	@echo "  VERSION=$(VERSION)  (override with: make dmg VERSION=1.0.1)"
+	@echo "  VERSION=$(VERSION)  (override with: make dmg VERSION=1.0.2)"
 
 build:
 	@echo "Building Snap for Apple Silicon (macOS 15)..."
@@ -78,6 +79,9 @@ dmg: app
 	@mkdir -p $(RELEASE_DIR)/dmg
 	@cp -R $(APP_DIR) $(RELEASE_DIR)/dmg/
 	@ln -sf /Applications $(RELEASE_DIR)/dmg/Applications
+	@# Gatekeeper bypass helper for unnotarized GitHub downloads (macOS Sequoia+)
+	@cp "$(FIRST_OPEN)" "$(RELEASE_DIR)/dmg/首次打开 Snap.command"
+	@chmod +x "$(RELEASE_DIR)/dmg/首次打开 Snap.command"
 	@hdiutil create -volname "$(APP_NAME)" \
 		-srcfolder $(RELEASE_DIR)/dmg \
 		-ov -format UDZO \
@@ -89,8 +93,9 @@ install: app
 	@echo "Installing to /Applications..."
 	@cp -r $(APP_DIR) /Applications/
 	@echo "Installed to /Applications/$(APP_NAME).app"
-	@echo "If macOS says the app is damaged, run:"
-	@echo "  xattr -cr /Applications/$(APP_NAME).app"
+	@echo "If macOS shows「未打开 Snap.app」/「Apple 无法验证」, run:"
+	@echo "  xattr -cr /Applications/$(APP_NAME).app && open /Applications/$(APP_NAME).app"
+	@echo "Or: System Settings → Privacy & Security → Open Anyway"
 
 clean:
 	@echo "Cleaning build artifacts..."
