@@ -4,6 +4,7 @@ import KeyboardShortcuts
 struct MenuBarView: View {
     @EnvironmentObject var appState: AppState
     @State private var showingPreferences = false
+    @State private var overlayWindow: SelectionOverlayWindow?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -76,11 +77,14 @@ struct MenuBarView: View {
     }
     
     private func handleCaptureArea() async {
+        guard overlayWindow == nil else { return }
+        
         appState.startCapture()
         
         await MainActor.run {
-            let overlayWindow = SelectionOverlayWindow()
-            overlayWindow.onAreaSelected = { rect in
+            let overlay = SelectionOverlayWindow()
+            self.overlayWindow = overlay
+            overlay.onAreaSelected = { rect in
                 Task {
                     do {
                         let image = try await ScreenshotCapture.shared.captureArea(rect)
@@ -91,7 +95,19 @@ struct MenuBarView: View {
                         }
                     } catch {
                         print("Failed to capture area: \(error)")
+                        await MainActor.run {
+                            appState.isSelectingArea = false
+                        }
                     }
+                    await MainActor.run {
+                        self.overlayWindow = nil
+                    }
+                }
+            }
+            overlay.onCancel = {
+                Task { @MainActor in
+                    appState.isSelectingArea = false
+                    self.overlayWindow = nil
                 }
             }
         }

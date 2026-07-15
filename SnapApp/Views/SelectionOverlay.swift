@@ -6,6 +6,7 @@ class SelectionOverlayWindow: NSWindow {
     private var currentPoint: CGPoint?
     private var selectionView: SelectionView?
     var onAreaSelected: ((CGRect) -> Void)?
+    var onCancel: (() -> Void)?
     
     init() {
         let screenFrame = NSScreen.main?.frame ?? .zero
@@ -34,6 +35,7 @@ class SelectionOverlayWindow: NSWindow {
     
     override func keyDown(with event: NSEvent) {
         if event.keyCode == 53 {
+            onCancel?()
             close()
         }
     }
@@ -46,6 +48,11 @@ class SelectionOverlayWindow: NSWindow {
     
     func finishSelection(rect: CGRect) {
         onAreaSelected?(rect)
+        close()
+    }
+    
+    func cancel() {
+        onCancel?()
         close()
     }
 }
@@ -116,7 +123,7 @@ class SelectionView: NSView {
         if rect.width > 10 && rect.height > 10 {
             overlayWindow?.finishSelection(rect: rect)
         } else {
-            overlayWindow?.close()
+            overlayWindow?.cancel()
         }
     }
 }

@@ -21,15 +21,17 @@ final class ScreenshotCapture {
     func captureFullScreen() async throws -> NSImage? {
         let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
         
-        guard let display = content.displays.first else {
+        guard let display = content.displays.first,
+              let screen = NSScreen.main else {
             throw ScreenshotError.noDisplayFound
         }
         
         let filter = SCContentFilter(display: display, excludingWindows: [])
         let configuration = SCStreamConfiguration()
         
-        configuration.width = Int(display.width) * 2
-        configuration.height = Int(display.height) * 2
+        let scale = screen.backingScaleFactor
+        configuration.width = Int(display.width * Int(scale))
+        configuration.height = Int(display.height * Int(scale))
         configuration.showsCursor = false
         configuration.captureResolution = .best
         
@@ -41,18 +43,27 @@ final class ScreenshotCapture {
     func captureArea(_ rect: CGRect) async throws -> NSImage? {
         let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
         
-        guard let display = content.displays.first else {
+        guard let display = content.displays.first,
+              let screen = NSScreen.main else {
             throw ScreenshotError.noDisplayFound
         }
+        
+        let screenFrame = screen.frame
+        let convertedRect = CGRect(
+            x: rect.origin.x,
+            y: screenFrame.height - rect.origin.y - rect.height,
+            width: rect.width,
+            height: rect.height
+        )
         
         let filter = SCContentFilter(display: display, excludingWindows: [])
         let configuration = SCStreamConfiguration()
         
-        let scale: CGFloat = 2.0
+        let scale = screen.backingScaleFactor
         configuration.width = Int(rect.width * scale)
         configuration.height = Int(rect.height * scale)
         configuration.showsCursor = false
-        configuration.sourceRect = rect
+        configuration.sourceRect = convertedRect
         configuration.captureResolution = .best
         
         let image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: configuration)

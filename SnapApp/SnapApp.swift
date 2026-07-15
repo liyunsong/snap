@@ -4,7 +4,7 @@ import KeyboardShortcuts
 @main
 struct SnapApp: App {
     @StateObject private var appState = AppState()
-    @State private var editorWindow: NSWindow?
+    @State private var overlayWindow: SelectionOverlayWindow?
     
     init() {
         setupShortcuts()
@@ -26,20 +26,18 @@ struct SnapApp: App {
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
-        .onChange(of: appState.isEditorVisible) { _, isVisible in
-            if isVisible {
-                openEditorWindow()
-            }
-        }
     }
     
     private func setupShortcuts() {
         ShortcutManager.shared.onCaptureArea = {
             Task { @MainActor in
+                guard self.overlayWindow == nil else { return }
+                
                 appState.startCapture()
                 
-                let overlayWindow = SelectionOverlayWindow()
-                overlayWindow.onAreaSelected = { rect in
+                let overlay = SelectionOverlayWindow()
+                self.overlayWindow = overlay
+                overlay.onAreaSelected = { rect in
                     Task {
                         do {
                             let image = try await ScreenshotCapture.shared.captureArea(rect)
@@ -50,7 +48,19 @@ struct SnapApp: App {
                             }
                         } catch {
                             print("Failed to capture area: \(error)")
+                            await MainActor.run {
+                                appState.isSelectingArea = false
+                            }
                         }
+                        await MainActor.run {
+                            self.overlayWindow = nil
+                        }
+                    }
+                }
+                overlay.onCancel = {
+                    Task { @MainActor in
+                        appState.isSelectingArea = false
+                        self.overlayWindow = nil
                     }
                 }
             }
@@ -69,38 +79,6 @@ struct SnapApp: App {
                     print("Failed to capture full screen: \(error)")
                 }
             }
-        }
-    }
-    
-    private func openEditorWindow() {
-        guard let image = appState.capturedImage else { return }
-        
-        DispatchQueue.main.async {
-            if let existingWindow = NSApplication.shared.windows.first(where: { $0.title == "编辑截图" }) {
-                existingWindow.makeKeyAndOrderFront(nil)
-                return
-            }
-            
-            let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height),
-                styleMask: [.titled, .closable, .miniaturizable],
-                backing: .buffered,
-                defer: false
-            )
-            
-            window.title = "编辑截图"
-            window.center()
-            window.setFrameAutosaveName("EditorWindow")
-            window.isReleasedWhenClosed = false
-            
-            let editorView = EditorView()
-                .environmentObject(appState)
-                .frame(width: image.size.width, height: image.size.height)
-            
-            window.contentView = NSHostingView(rootView: editorView)
-            window.makeKeyAndOrderFront(nil)
-            
-            editorWindow = window
         }
     }
 }

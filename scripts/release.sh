@@ -85,13 +85,7 @@ make release
 
 # 检查构建产物
 BUILD_DIR=".build/release"
-ZIP_FILE="${BUILD_DIR}/${APP_NAME}-${VERSION}.zip"
 DMG_FILE="${BUILD_DIR}/${APP_NAME}-${VERSION}.dmg"
-
-if [ ! -f "$ZIP_FILE" ]; then
-    echo -e "${RED}❌ ZIP 文件不存在: ${ZIP_FILE}${NC}"
-    exit 1
-fi
 
 if [ ! -f "$DMG_FILE" ]; then
     echo -e "${RED}❌ DMG 文件不存在: ${DMG_FILE}${NC}"
@@ -103,16 +97,13 @@ echo ""
 echo -e "${GREEN}✅ 构建成功！${NC}"
 echo ""
 echo -e "${BLUE}📦 构建产物:${NC}"
-ls -lh "$ZIP_FILE"
 ls -lh "$DMG_FILE"
 echo ""
 
 # 计算文件哈希
 echo -e "${BLUE}🔐 计算文件哈希...${NC}"
-ZIP_SHA256=$(shasum -a 256 "$ZIP_FILE" | awk '{print $1}')
 DMG_SHA256=$(shasum -a 256 "$DMG_FILE" | awk '{print $1}')
 
-echo "ZIP SHA256: $ZIP_SHA256"
 echo "DMG SHA256: $DMG_SHA256"
 echo ""
 
@@ -150,13 +141,11 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "### SHA256 校验和" >> "$TEMP_NOTES"
     echo "" >> "$TEMP_NOTES"
     echo "\`\`\`" >> "$TEMP_NOTES"
-    echo "ZIP: $ZIP_SHA256" >> "$TEMP_NOTES"
     echo "DMG: $DMG_SHA256" >> "$TEMP_NOTES"
     echo "\`\`\`" >> "$TEMP_NOTES"
     
     # 使用 gh CLI 创建 Release
     gh release create "$TAG" \
-        "$ZIP_FILE" \
         "$DMG_FILE" \
         --title "${APP_NAME} ${TAG}" \
         --notes-file "$TEMP_NOTES" \
@@ -174,7 +163,6 @@ else
     echo ""
     echo -e "${BLUE}手动创建 Release:${NC}"
     echo "   gh release create ${TAG} \\"
-    echo "     ${ZIP_FILE} \\"
     echo "     ${DMG_FILE} \\"
     echo "     --title '${APP_NAME} ${TAG}' \\"
     echo "     --notes-file RELEASE_NOTES.md"

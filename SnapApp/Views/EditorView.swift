@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct EditorView: View {
     @EnvironmentObject var appState: AppState
@@ -57,6 +58,9 @@ struct EditorView: View {
             width: appState.capturedImage?.size.width ?? 800,
             height: appState.capturedImage?.size.height ?? 600
         )
+        .background(WindowAccessor(onWindowClose: {
+            appState.reset()
+        }))
     }
     
     private func handleDragChanged(_ value: DragGesture.Value) {
@@ -73,7 +77,9 @@ struct EditorView: View {
                     lineWidth: appState.lineWidth
                 )
             } else {
-                currentAnnotation?.points.append(value.location)
+                var annotation = currentAnnotation!
+                annotation.points.append(value.location)
+                currentAnnotation = annotation
             }
         } else {
             currentAnnotation = createAnnotation(from: dragStart ?? value.startLocation, to: value.location)
@@ -135,5 +141,49 @@ class EditorWindow: NSWindowController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct WindowAccessor: NSViewRepresentable {
+    let onWindowClose: () -> Void
+    
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                context.coordinator.observeWindow(window)
+            }
+        }
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSView, context: Context) {
+        if let window = nsView.window, context.coordinator.observedWindow == nil {
+            context.coordinator.observeWindow(window)
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onWindowClose: onWindowClose)
+    }
+    
+    class Coordinator: NSObject, NSWindowDelegate {
+        let onWindowClose: () -> Void
+        var observedWindow: NSWindow?
+        
+        init(onWindowClose: @escaping () -> Void) {
+            self.onWindowClose = onWindowClose
+            super.init()
+        }
+        
+        func observeWindow(_ window: NSWindow) {
+            guard observedWindow == nil else { return }
+            observedWindow = window
+            window.delegate = self
+        }
+        
+        func windowWillClose(_ notification: Notification) {
+            onWindowClose()
+        }
     }
 }

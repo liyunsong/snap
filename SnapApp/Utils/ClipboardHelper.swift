@@ -47,6 +47,10 @@ final class ClipboardHelper {
         
         let context = NSGraphicsContext.current!.cgContext
         
+        context.saveGState()
+        context.translateBy(x: 0, y: size.height)
+        context.scaleBy(x: 1.0, y: -1.0)
+        
         for annotation in annotations {
             context.saveGState()
             
@@ -94,20 +98,38 @@ final class ClipboardHelper {
                 
             case .text:
                 if let text = annotation.text, let rect = annotation.rect {
+                    context.saveGState()
+                    context.translateBy(x: 0, y: size.height)
+                    context.scaleBy(x: 1.0, y: -1.0)
+                    
                     let attributes: [NSAttributedString.Key: Any] = [
                         .font: NSFont.systemFont(ofSize: 16),
                         .foregroundColor: nsColor
                     ]
                     let attributedString = NSAttributedString(string: text, attributes: attributes)
                     attributedString.draw(in: rect)
+                    
+                    context.restoreGState()
                 }
                 
-            case .mosaic, .blur:
-                break
+            case .mosaic:
+                if annotation.points.count >= 2 {
+                    let rect = rectFromPoints(annotation.points[0], annotation.points[1])
+                    context.fill(rect)
+                }
+                
+            case .blur:
+                if annotation.points.count >= 2 {
+                    let rect = rectFromPoints(annotation.points[0], annotation.points[1])
+                    nsColor.withAlphaComponent(0.5).setFill()
+                    context.fill(rect)
+                }
             }
             
             context.restoreGState()
         }
+        
+        context.restoreGState()
         
         image.unlockFocus()
         
