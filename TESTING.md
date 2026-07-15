@@ -2,7 +2,7 @@
 
 ## 测试环境要求
 
-- macOS 13.0 (Ventura) 或更高版本
+- macOS 14.0 (Sonoma) 或更高版本
 - Xcode 15.0+ 或 Swift 5.9+
 - 屏幕录制权限
 
