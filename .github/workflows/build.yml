@@ -38,9 +38,10 @@ jobs:
       
       - name: Build for Apple Silicon
         run: |
-          echo "Building Snap for arm64..."
-          swift build -c release --arch arm64
-          echo "Binary path: $(swift build -c release --arch arm64 --show-bin-path)"
+          echo "Building Snap for arm64 (macOS 15)..."
+          swift build -c release --triple arm64-apple-macosx15.0
+          echo "Binary path: $(swift build -c release --triple arm64-apple-macosx15.0 --show-bin-path)"
+          find .build -type f -name SnapApp -perm -111
       
       - name: Create .app bundle
         run: |

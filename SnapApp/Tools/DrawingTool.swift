@@ -10,7 +10,7 @@ struct RectangleTool: DrawingTool {
         guard annotation.points.count >= 2 else { return }
         let rect = rectFromPoints(annotation.points[0], annotation.points[1])
         let path = Path(rect)
-        context.stroke(path, with: .color(annotation.color), lineWidth: annotation.lineWidth)
+        context.stroke(path, with: .color(annotation.swiftUIColor), lineWidth: annotation.lineWidth)
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {
@@ -27,7 +27,7 @@ struct CircleTool: DrawingTool {
         guard annotation.points.count >= 2 else { return }
         let rect = rectFromPoints(annotation.points[0], annotation.points[1])
         let path = Path(ellipseIn: rect)
-        context.stroke(path, with: .color(annotation.color), lineWidth: annotation.lineWidth)
+        context.stroke(path, with: .color(annotation.swiftUIColor), lineWidth: annotation.lineWidth)
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {
@@ -45,7 +45,7 @@ struct LineTool: DrawingTool {
         var path = Path()
         path.move(to: annotation.points[0])
         path.addLine(to: annotation.points[1])
-        context.stroke(path, with: .color(annotation.color), style: StrokeStyle(lineWidth: annotation.lineWidth, lineCap: .round))
+        context.stroke(path, with: .color(annotation.swiftUIColor), style: StrokeStyle(lineWidth: annotation.lineWidth, lineCap: .round))
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {
@@ -81,7 +81,7 @@ struct ArrowTool: DrawingTool {
         path.move(to: to)
         path.addLine(to: point2)
         
-        context.stroke(path, with: .color(annotation.color), style: StrokeStyle(lineWidth: annotation.lineWidth, lineCap: .round))
+        context.stroke(path, with: .color(annotation.swiftUIColor), style: StrokeStyle(lineWidth: annotation.lineWidth, lineCap: .round))
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {
@@ -97,7 +97,7 @@ struct PenTool: DrawingTool {
         for point in annotation.points.dropFirst() {
             path.addLine(to: point)
         }
-        context.stroke(path, with: .color(annotation.color), style: StrokeStyle(lineWidth: annotation.lineWidth, lineCap: .round, lineJoin: .round))
+        context.stroke(path, with: .color(annotation.swiftUIColor), style: StrokeStyle(lineWidth: annotation.lineWidth, lineCap: .round, lineJoin: .round))
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {
@@ -108,7 +108,7 @@ struct PenTool: DrawingTool {
 struct TextTool: DrawingTool {
     func draw(in context: GraphicsContext, annotation: Annotation) {
         guard let text = annotation.text, let rect = annotation.rect else { return }
-        context.draw(Text(text).foregroundColor(annotation.color).font(.system(size: 16)), at: CGPoint(x: rect.midX, y: rect.midY))
+        context.draw(Text(text).foregroundColor(annotation.swiftUIColor).font(.system(size: 16)), at: CGPoint(x: rect.midX, y: rect.midY))
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {

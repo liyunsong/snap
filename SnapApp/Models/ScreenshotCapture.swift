@@ -1,16 +1,16 @@
 import Foundation
-import ScreenCaptureKit
 import AppKit
+@preconcurrency import ScreenCaptureKit
 
 @MainActor
-class ScreenshotCapture {
+final class ScreenshotCapture {
     static let shared = ScreenshotCapture()
     
     private init() {}
     
     func requestPermission() async -> Bool {
         do {
-            try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+            _ = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
             return true
         } catch {
             print("Failed to request screen capture permission: \(error)")
@@ -31,15 +31,11 @@ class ScreenshotCapture {
         configuration.width = Int(display.width) * 2
         configuration.height = Int(display.height) * 2
         configuration.showsCursor = false
-        
-        if #available(macOS 14.0, *) {
-            configuration.captureResolution = .best
-        }
+        configuration.captureResolution = .best
         
         let image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: configuration)
         
-        let nsImage = NSImage(cgImage: image, size: NSSize(width: display.width, height: display.height))
-        return nsImage
+        return NSImage(cgImage: image, size: NSSize(width: display.width, height: display.height))
     }
     
     func captureArea(_ rect: CGRect) async throws -> NSImage? {
@@ -57,15 +53,11 @@ class ScreenshotCapture {
         configuration.height = Int(rect.height * scale)
         configuration.showsCursor = false
         configuration.sourceRect = rect
-        
-        if #available(macOS 14.0, *) {
-            configuration.captureResolution = .best
-        }
+        configuration.captureResolution = .best
         
         let image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: configuration)
         
-        let nsImage = NSImage(cgImage: image, size: NSSize(width: rect.width, height: rect.height))
-        return nsImage
+        return NSImage(cgImage: image, size: NSSize(width: rect.width, height: rect.height))
     }
 }
 

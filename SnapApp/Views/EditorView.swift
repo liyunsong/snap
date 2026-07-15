@@ -10,15 +10,13 @@ struct EditorView: View {
         ZStack {
             if let image = appState.capturedImage {
                 Canvas { context, size in
-                    do {
-                        let nsImage = image
-                        let imageSize = nsImage.size
-                        let rect = CGRect(origin: .zero, size: imageSize)
-                        
-                        if let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) {
-                            let resolvedImage = Image(decorative: cgImage, scale: 1.0)
-                            context.draw(resolvedImage, in: rect)
-                        }
+                    let nsImage = image
+                    let imageSize = nsImage.size
+                    let rect = CGRect(origin: .zero, size: imageSize)
+                    
+                    if let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+                        let resolvedImage = Image(decorative: cgImage, scale: 1.0)
+                        context.draw(resolvedImage, in: rect)
                     }
                     
                     for annotation in appState.annotations {

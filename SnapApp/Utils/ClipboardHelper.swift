@@ -1,7 +1,8 @@
 import AppKit
 import SwiftUI
 
-class ClipboardHelper {
+@MainActor
+final class ClipboardHelper {
     static let shared = ClipboardHelper()
     
     private init() {}
@@ -49,7 +50,7 @@ class ClipboardHelper {
         for annotation in annotations {
             context.saveGState()
             
-            let nsColor = NSColor(annotation.color)
+            let nsColor = NSColor(annotation.swiftUIColor)
             nsColor.setStroke()
             nsColor.setFill()
             

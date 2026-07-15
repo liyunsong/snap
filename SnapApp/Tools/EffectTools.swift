@@ -7,7 +7,7 @@ struct MosaicTool: DrawingTool {
         guard annotation.points.count >= 2, let rect = annotation.rect else { return }
         var path = Path()
         path.addRect(rect)
-        context.fill(path, with: .color(annotation.color.opacity(0.5)))
+        context.fill(path, with: .color(annotation.swiftUIColor.opacity(0.5)))
     }
     
     func createAnnotation(from startPoint: CGPoint, to endPoint: CGPoint, color: Color, lineWidth: CGFloat) -> Annotation {
@@ -32,7 +32,8 @@ struct BlurTool: DrawingTool {
     }
 }
 
-class ImageEffectProcessor {
+@MainActor
+final class ImageEffectProcessor {
     static let shared = ImageEffectProcessor()
     private let context = CIContext()
     
