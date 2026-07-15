@@ -27,8 +27,8 @@ help:
 	@echo "  make release   - Build everything for release"
 
 build:
-	@echo "🔨 Building Snap..."
-	swift build -c release --arch arm64 --arch x86_64
+	@echo "🔨 Building Snap for Apple Silicon (macOS 26)..."
+	swift build -c release --arch arm64
 
 app: build
 	@echo "📦 Creating .app bundle..."

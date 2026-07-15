@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "SnapApp",
     platforms: [
-        .macOS(.v13)
+        .macOS(.v15)  // macOS 15 Sequoia or later
     ],
     products: [
         .executable(

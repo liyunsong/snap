@@ -80,26 +80,33 @@ SnapApp/
 3. 安装到 Applications 文件夹
 4. 首次运行时授予屏幕录制权限
 
-### 从源码构建
+### 从源码构建（本地使用）
 
 ```bash
 # 克隆仓库
 git clone https://github.com/liyunsong/snap.git
 cd snap
 
-# 构建发布版本
-make release
+# 快速构建（推荐）
+./build-local.sh
 
-# 或快速构建
-swift build -c release
-swift run
+# 安装到 Applications
+sudo cp -r .build/release/Snap.app /Applications/
+
+# 或使用 Makefile
+make release
+make install
 ```
+
+详细指南: [LOCAL_BUILD.md](LOCAL_BUILD.md)
 
 ## 系统要求
 
-- **macOS**: 13.0 (Ventura) 或更高版本
+- **macOS**: 15.0 (Sequoia) 或更高版本
+- **架构**: Apple Silicon (M1/M2/M3)
 - **开发工具**: Xcode 15.0+ 或 Swift 5.9+（仅开发时需要）
-- **架构**: Apple Silicon 或 Intel Mac（Universal Binary）
+
+> 注: 本版本针对 Apple Silicon 优化，专为个人使用
 
 ## 权限配置
 
