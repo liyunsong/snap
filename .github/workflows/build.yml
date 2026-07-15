@@ -1,0 +1,80 @@
+name: Build Snap
+
+on:
+  push:
+    branches: [ "cursor/**", "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for Apple Silicon
+    runs-on: macos-14  # macOS with Apple Silicon
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Show system info
+        run: |
+          echo "🖥️  System Information:"
+          sw_vers
+          uname -m
+          xcodebuild -version
+      
+      - name: Resolve dependencies
+        run: |
+          echo "📦 Resolving Swift dependencies..."
+          swift package resolve
+      
+      - name: Build for Apple Silicon
+        run: |
+          echo "🔨 Building Snap for arm64..."
+          swift build -c release --arch arm64
+      
+      - name: Create .app bundle
+        run: |
+          echo "📦 Creating .app bundle..."
+          make app
+      
+      - name: Show build info
+        run: |
+          echo "✅ Build complete!"
+          echo ""
+          echo "📊 Build artifacts:"
+          ls -lh .build/release/
+          echo ""
+          echo "🔍 App bundle structure:"
+          ls -lh .build/release/Snap.app/Contents/MacOS/
+          echo ""
+          echo "💾 File size:"
+          du -sh .build/release/Snap.app
+      
+      - name: Create ZIP archive
+        run: |
+          echo "📦 Creating ZIP archive..."
+          cd .build/release
+          zip -r Snap-arm64.zip Snap.app
+          echo ""
+          echo "✅ ZIP created:"
+          ls -lh Snap-arm64.zip
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap-macOS-AppleSilicon
+          path: .build/release/Snap-arm64.zip
+          retention-days: 30
+      
+      - name: Show download instructions
+        run: |
+          echo "✅ Build completed successfully!"
+          echo ""
+          echo "📥 To download the built app:"
+          echo "1. Go to: https://github.com/${{ github.repository }}/actions"
+          echo "2. Click on this workflow run"
+          echo "3. Scroll down to 'Artifacts'"
+          echo "4. Download 'Snap-macOS-AppleSilicon'"
+          echo ""
+          echo "📦 File size: $(du -sh .build/release/Snap-arm64.zip | cut -f1)"
