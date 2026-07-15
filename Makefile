@@ -11,7 +11,7 @@ CONTENTS_DIR = $(APP_DIR)/Contents
 MACOS_DIR = $(CONTENTS_DIR)/MacOS
 RESOURCES_DIR = $(CONTENTS_DIR)/Resources
 
-.PHONY: all clean build app zip install help
+.PHONY: all clean build app zip dmg install help release
 
 all: app
 
@@ -22,9 +22,10 @@ help:
 	@echo "  make build     - Build the Swift executable (arm64)"
 	@echo "  make app       - Create .app bundle"
 	@echo "  make zip       - Create ZIP archive"
+	@echo "  make dmg       - Create DMG installer"
 	@echo "  make install   - Install to /Applications"
 	@echo "  make clean     - Clean build artifacts"
-	@echo "  make release   - Build everything for release"
+	@echo "  make release   - Build app + ZIP + DMG"
 
 build:
 	@echo "Building Snap for Apple Silicon (macOS 15)..."
@@ -51,6 +52,19 @@ zip: app
 	@cd $(RELEASE_DIR) && zip -r $(APP_NAME)-$(VERSION).zip $(APP_NAME).app
 	@echo "ZIP created at: $(RELEASE_DIR)/$(APP_NAME)-$(VERSION).zip"
 
+dmg: app
+	@echo "Creating DMG installer..."
+	@rm -rf $(RELEASE_DIR)/dmg
+	@mkdir -p $(RELEASE_DIR)/dmg
+	@cp -R $(APP_DIR) $(RELEASE_DIR)/dmg/
+	@ln -sf /Applications $(RELEASE_DIR)/dmg/Applications
+	@hdiutil create -volname "$(APP_NAME)" \
+		-srcfolder $(RELEASE_DIR)/dmg \
+		-ov -format UDZO \
+		$(RELEASE_DIR)/$(APP_NAME)-$(VERSION).dmg
+	@rm -rf $(RELEASE_DIR)/dmg
+	@echo "DMG created at: $(RELEASE_DIR)/$(APP_NAME)-$(VERSION).dmg"
+
 install: app
 	@echo "Installing to /Applications..."
 	@cp -r $(APP_DIR) /Applications/
@@ -62,12 +76,14 @@ clean:
 	@rm -rf .swiftpm
 	@echo "Clean complete"
 
-release: clean build app zip
+release: clean build app zip dmg
 	@echo ""
 	@echo "Release build complete!"
 	@echo "  App:  $(APP_DIR)"
 	@echo "  ZIP:  $(RELEASE_DIR)/$(APP_NAME)-$(VERSION).zip"
+	@echo "  DMG:  $(RELEASE_DIR)/$(APP_NAME)-$(VERSION).dmg"
 	@du -sh $(APP_DIR)
 	@du -sh $(RELEASE_DIR)/$(APP_NAME)-$(VERSION).zip
+	@du -sh $(RELEASE_DIR)/$(APP_NAME)-$(VERSION).dmg
 
 .DEFAULT_GOAL := help

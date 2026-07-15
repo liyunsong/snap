@@ -33,10 +33,11 @@ jobs:
       - name: Build (release, Apple Silicon)
         run: swift build -c release --arch arm64
 
-      - name: Package (.app + ZIP)
+      - name: Package (.app + ZIP + DMG)
         run: |
           make app
           make zip
+          make dmg
 
       - name: List build artifacts
         run: ls -lh .build/release
@@ -45,6 +46,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Snap-macOS-AppleSilicon
-          path: .build/release/Snap-*.zip
+          path: |
+            .build/release/Snap-*.zip
+            .build/release/Snap-*.dmg
           if-no-files-found: error
           retention-days: 30
