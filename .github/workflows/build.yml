@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build for Apple Silicon
-    runs-on: macos-14  # macOS with Apple Silicon
+    runs-on: macos-14
     
     steps:
       - name: Checkout code
@@ -18,47 +18,38 @@ jobs:
       
       - name: Select Xcode
         run: |
-          echo "Available Xcodes:"
           ls /Applications | grep Xcode || true
-          # Prefer latest Xcode (needs Swift 6 PackageDescription for macOS 15)
           sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode.app
           xcodebuild -version
           swift --version
       
       - name: Show system info
         run: |
-          echo "System Information:"
           sw_vers
           uname -m
       
+      - name: Clean
+        run: |
+          rm -rf .build .swiftpm
+      
       - name: Resolve dependencies
         run: |
-          echo "Resolving Swift dependencies..."
           swift package resolve
       
       - name: Build for Apple Silicon
         run: |
           echo "Building Snap for arm64 (macOS 15)..."
-          swift build -c release --triple arm64-apple-macosx15.0
-          echo "Binary path: $(swift build -c release --triple arm64-apple-macosx15.0 --show-bin-path)"
+          swift build -c release --arch arm64
+          echo "Binary path:"
+          swift build -c release --arch arm64 --show-bin-path
           find .build -type f -name SnapApp -perm -111
       
       - name: Create .app bundle
         run: |
-          echo "Creating .app bundle..."
           make app
-      
-      - name: Show build info
-        run: |
-          echo "Build complete!"
-          echo ""
-          echo "App bundle:"
-          ls -lh .build/release/Snap.app/Contents/MacOS/
-          du -sh .build/release/Snap.app
       
       - name: Create ZIP archive
         run: |
-          echo "Creating ZIP archive..."
           cd .build/release
           zip -r Snap-arm64.zip Snap.app
           ls -lh Snap-arm64.zip
@@ -72,11 +63,7 @@ jobs:
       
       - name: Show download instructions
         run: |
-          echo "Build completed successfully!"
-          echo ""
-          echo "Download:"
-          echo "1. https://github.com/${{ github.repository }}/actions"
-          echo "2. Open this workflow run"
-          echo "3. Artifacts -> Snap-macOS-AppleSilicon"
-          echo ""
-          echo "Size: $(du -sh .build/release/Snap-arm64.zip | cut -f1)"
+          echo "Build completed!"
+          echo "Download from: https://github.com/${{ github.repository }}/actions"
+          echo "Artifact: Snap-macOS-AppleSilicon"
+          du -sh .build/release/Snap-arm64.zip

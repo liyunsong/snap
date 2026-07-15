@@ -10,7 +10,6 @@ APP_DIR = $(RELEASE_DIR)/$(APP_NAME).app
 CONTENTS_DIR = $(APP_DIR)/Contents
 MACOS_DIR = $(CONTENTS_DIR)/MacOS
 RESOURCES_DIR = $(CONTENTS_DIR)/Resources
-SWIFT_TRIPLE = arm64-apple-macosx15.0
 
 .PHONY: all clean build app zip install help
 
@@ -29,13 +28,13 @@ help:
 
 build:
 	@echo "Building Snap for Apple Silicon (macOS 15)..."
-	swift build -c release --triple $(SWIFT_TRIPLE)
+	swift build -c release --arch arm64
 
 app: build
 	@echo "Creating .app bundle..."
 	@mkdir -p $(MACOS_DIR)
 	@mkdir -p $(RESOURCES_DIR)
-	@BIN=$$(swift build -c release --triple $(SWIFT_TRIPLE) --show-bin-path)/SnapApp; \
+	@BIN=$$(swift build -c release --arch arm64 --show-bin-path)/SnapApp; \
 	 if [ ! -f "$$BIN" ]; then \
 	   BIN=$$(find $(BUILD_DIR) -type f -name SnapApp -perm -111 | head -1); \
 	 fi; \

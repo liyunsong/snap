@@ -20,10 +20,7 @@ let package = Package(
             name: "SnapApp",
             dependencies: ["KeyboardShortcuts"],
             path: "SnapApp",
-            exclude: ["Resources/Info.plist"],
-            swiftSettings: [
-                .swiftLanguageMode(.v5)
-            ]
+            exclude: ["Resources/Info.plist"]
         )
     ]
 )
