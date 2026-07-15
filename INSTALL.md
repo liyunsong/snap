@@ -91,14 +91,20 @@ make install
    
 3. **允许打开应用**（如果出现警告）
    
-   如果看到"无法验证开发者"警告：
+   下载安装后，macOS 15 可能弹出 **「未打开 Snap.app」**，并提示 Apple 无法验证是否包含恶意软件（只有「完成」按钮）。这是未公证开源应用的正常 Gatekeeper 拦截，不是损坏。
    
-   **方法 A**: 右键打开
+   **方法 A**: DMG 内双击 **「首次打开 Snap.command」**（v1.0.2+）
+   
+   **方法 B**: 系统设置
+   1. 点「完成」
+   2. **系统设置** → **隐私与安全性**
+   3. 滚到「安全性」，点 Snap 旁的 **仍要打开**
+   
+   **方法 C**: 右键打开
    - 右键点击 Snap.app
-   - 选择"打开"
-   - 点击"打开"
+   - 选择「打开」→ 再点「打开」
    
-   **方法 B**: 使用终端
+   **方法 D**: 使用终端
    ```bash
    xattr -cr /Applications/Snap.app
    open /Applications/Snap.app
@@ -175,16 +181,18 @@ rm -rf ~/Library/Application\ Support/Snap
 xcode-select --install
 ```
 
-### Q: 应用无法打开，提示"已损坏"
+### Q: 应用无法打开，提示"已损坏"或「未打开 Snap.app」
 
-**A**: 常见有两种原因：
+**A**: 常见有两种情况：
 
-1. **下载的是有缺陷的 v1.0.0 包**（缺少 `CFBundleExecutable`）：请改下 [最新 Release](https://github.com/liyunsong/snap/releases)（v1.0.1+）。
-2. **Gatekeeper 隔离属性**（未公证的网上下载应用）：
-```bash
-xattr -cr /Applications/Snap.app
-open /Applications/Snap.app
-```
+1. **下载的是有缺陷的 v1.0.0 包**（缺少 `CFBundleExecutable`）：请改下 [最新 Release](https://github.com/liyunsong/snap/releases)（v1.0.2+）。
+2. **Gatekeeper 隔离**（未公证的网上下载应用，弹窗文案多为「Apple 无法验证」）：
+   - 双击 DMG 内 **「首次打开 Snap.command」**，或
+   - 系统设置 → 隐私与安全性 → **仍要打开**，或
+   ```bash
+   xattr -cr /Applications/Snap.app
+   open /Applications/Snap.app
+   ```
 
 ### Q: 没有屏幕录制权限
 

@@ -76,14 +76,19 @@ SnapApp/
 ### 从 GitHub Release 下载（推荐）
 
 1. 访问 [Releases 页面](https://github.com/liyunsong/snap/releases)
-2. 下载最新版本的 **DMG**（请使用 **v1.0.1 或更高**；v1.0.0 安装包有打包缺陷，会显示「已损坏」）
+2. 下载最新版本的 **DMG**（请使用 **v1.0.2 或更高**）
 3. 双击 DMG，将 Snap 拖到 Applications
-4. 若 macOS 提示「已损坏」或无法验证开发者，在终端执行：
-   ```bash
-   xattr -cr /Applications/Snap.app
-   open /Applications/Snap.app
-   ```
+4. 若弹出 **「未打开 Snap.app」** / **「Apple 无法验证」**（只有「完成」）：
+   - **推荐**：双击 DMG 里的 **「首次打开 Snap.command」**
+   - 或：系统设置 → 隐私与安全性 → 滚到「安全性」→ **仍要打开**
+   - 或终端执行：
+     ```bash
+     xattr -cr /Applications/Snap.app
+     open /Applications/Snap.app
+     ```
 5. 首次运行时授予屏幕录制权限
+
+> 开源免费分发、未经 Apple 公证，macOS 会拦截一次，允许后即可正常使用。
 
 ### 从源码构建（本地使用）
 
