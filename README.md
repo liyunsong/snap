@@ -71,42 +71,35 @@ SnapApp/
     └── Info.plist                   # 权限配置
 ```
 
-## 系统要求
+## 📥 安装和使用
 
-- **macOS**: 13.0 (Ventura) 或更高版本
-- **开发工具**: Xcode 15.0+ 或 Swift 5.9+
-- **架构**: Apple Silicon 或 Intel Mac
+### 从 GitHub Release 下载（推荐）
 
-## 构建说明
+1. 访问 [Releases 页面](https://github.com/liyunsong/snap/releases)
+2. 下载最新版本的 **DMG** 或 **ZIP** 文件
+3. 安装到 Applications 文件夹
+4. 首次运行时授予屏幕录制权限
 
-### 使用 Swift Package Manager
+### 从源码构建
 
-1. 克隆仓库:
 ```bash
-git clone <repository-url>
+# 克隆仓库
+git clone https://github.com/liyunsong/snap.git
 cd snap
-```
 
-2. 构建项目:
-```bash
+# 构建发布版本
+make release
+
+# 或快速构建
 swift build -c release
-```
-
-3. 运行应用:
-```bash
 swift run
 ```
 
-### 使用 Xcode
+## 系统要求
 
-1. 在项目根目录运行:
-```bash
-open Package.swift
-```
-
-2. 在 Xcode 中:
-   - 选择 "SnapApp" scheme
-   - 点击 Run（⌘ + R）
+- **macOS**: 13.0 (Ventura) 或更高版本
+- **开发工具**: Xcode 15.0+ 或 Swift 5.9+（仅开发时需要）
+- **架构**: Apple Silicon 或 Intel Mac（Universal Binary）
 
 ## 权限配置
 
@@ -198,6 +191,37 @@ MIT License
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) by Sindre Sorhus
 - [ScreenCaptureKit](https://developer.apple.com/documentation/screencapturekit) by Apple
 - 灵感来源于 macOS 内置截图工具和其他优秀的截图应用
+
+## 📦 打包和发布
+
+### 快速发布到 GitHub Release
+
+```bash
+# 1. 安装 GitHub CLI
+brew install gh
+gh auth login
+
+# 2. 运行发布脚本
+./scripts/release.sh 1.0.0
+```
+
+### 手动构建
+
+```bash
+# 完整发布构建（包含 .app, ZIP, DMG）
+make release
+
+# 单独构建
+make app    # 创建 .app 包
+make zip    # 创建 ZIP 归档
+make dmg    # 创建 DMG 安装包
+```
+
+### 详细指南
+
+- 📖 [快速开始 (5分钟)](QUICK_START.md) - 最快发布方式
+- 📚 [完整发布指南](RELEASE_GUIDE.md) - 详细步骤和说明
+- 🔧 [Makefile 命令](Makefile) - 所有可用命令
 
 ## 联系方式
 
