@@ -177,9 +177,13 @@ xcode-select --install
 
 ### Q: 应用无法打开，提示"已损坏"
 
-**A**: 移除隔离属性：
+**A**: 常见有两种原因：
+
+1. **下载的是有缺陷的 v1.0.0 包**（缺少 `CFBundleExecutable`）：请改下 [最新 Release](https://github.com/liyunsong/snap/releases)（v1.0.1+）。
+2. **Gatekeeper 隔离属性**（未公证的网上下载应用）：
 ```bash
 xattr -cr /Applications/Snap.app
+open /Applications/Snap.app
 ```
 
 ### Q: 没有屏幕录制权限

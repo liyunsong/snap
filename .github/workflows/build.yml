@@ -33,7 +33,7 @@ jobs:
         run: swift build -c release --arch arm64
       
       - name: Package DMG
-        run: make dmg
+        run: make dmg VERSION=ci-$(echo '${{ github.sha }}' | cut -c1-7)
       
       - name: Upload DMG
         uses: actions/upload-artifact@v4

@@ -3,8 +3,10 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>SnapApp</string>
+    <string>Snap</string>
     <key>CFBundleDisplayName</key>
+    <string>Snap</string>
+    <key>CFBundleExecutable</key>
     <string>Snap</string>
     <key>CFBundleIdentifier</key>
     <string>com.snap.screenshot</string>
