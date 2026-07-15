@@ -81,7 +81,7 @@ make clean
 # 构建发布版本
 echo ""
 echo -e "${GREEN}🔨 开始构建...${NC}"
-make release
+make release VERSION=$VERSION
 
 # 检查构建产物
 BUILD_DIR=".build/release"
