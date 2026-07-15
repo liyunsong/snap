@@ -27,12 +27,6 @@ jobs:
       - name: Resolve dependencies
         run: swift package resolve
       
-      - name: Build for release
-        run: swift build -c release --arch arm64
-      
-      - name: Create DMG
-        run: make dmg
-      
       - name: Get version
         id: version
         run: |
@@ -42,12 +36,20 @@ jobs:
             VERSION="dev-$(git rev-parse --short HEAD)"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+      
+      - name: Build for release
+        run: swift build -c release --arch arm64
+      
+      - name: Create DMG
+        run: make dmg VERSION=${{ steps.version.outputs.VERSION }}
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Snap-${{ steps.version.outputs.VERSION }}
-          path: .build/release/Snap-*.dmg
+          path: .build/release/Snap-${{ steps.version.outputs.VERSION }}.dmg
+          if-no-files-found: error
           retention-days: 30
       
       - name: Create Release
@@ -56,7 +58,7 @@ jobs:
         with:
           name: Snap ${{ steps.version.outputs.VERSION }}
           body_path: RELEASE_NOTES.md
-          files: .build/release/Snap-*.dmg
+          files: .build/release/Snap-${{ steps.version.outputs.VERSION }}.dmg
           draft: false
           prerelease: false
         env:
