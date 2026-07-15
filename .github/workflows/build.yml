@@ -1,0 +1,59 @@
+name: Build Snap
+
+on:
+  push:
+    branches: [ "cursor/**", "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for Apple Silicon
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Select Xcode
+        run: |
+          ls /Applications | grep Xcode || true
+          sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
+          swift --version
+      
+      - name: Show system info
+        run: |
+          sw_vers
+          uname -m
+      
+      - name: Clean
+        run: rm -rf .build .swiftpm
+      
+      - name: Resolve dependencies
+        run: swift package resolve
+      
+      - name: Build for Apple Silicon
+        run: |
+          echo "Building Snap for arm64 (macOS 15)..."
+          swift build -c release --arch arm64
+      
+      - name: Package DMG
+        run: |
+          make dmg
+          ls -lh .build/release/Snap-*.dmg
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap-macOS-AppleSilicon
+          path: .build/release/Snap-*.dmg
+          retention-days: 30
+      
+      - name: Show download instructions
+        run: |
+          echo "Build completed!"
+          echo "Download from: https://github.com/${{ github.repository }}/actions"
+          echo "Artifact: Snap-1.0.0.dmg"
+          ls -lh .build/release/Snap-*.dmg
