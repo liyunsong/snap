@@ -51,6 +51,8 @@ app: build
 	@/usr/libexec/PlistBuddy -c "Set :CFBundleExecutable $(APP_NAME)" $(CONTENTS_DIR)/Info.plist 2>/dev/null \
 		|| /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $(APP_NAME)" $(CONTENTS_DIR)/Info.plist
 	@/usr/libexec/PlistBuddy -c "Set :CFBundleName $(APP_NAME)" $(CONTENTS_DIR)/Info.plist 2>/dev/null || true
+	@/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $(VERSION)" $(CONTENTS_DIR)/Info.plist 2>/dev/null || true
+	@/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(VERSION)" $(CONTENTS_DIR)/Info.plist 2>/dev/null || true
 	@chmod +x $(MACOS_DIR)/$(APP_NAME)
 	@# Ad-hoc sign so LaunchServices accepts the bundle structure
 	@codesign --force --deep --sign - $(APP_DIR)
