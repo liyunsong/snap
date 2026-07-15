@@ -46,12 +46,9 @@ class ImageEffectProcessor {
         
         guard let outputImage = pixellateFilter.outputImage else { return nil }
         
-        let cropFilter = CIFilter.crop()
-        cropFilter.inputImage = outputImage
-        cropFilter.rectangle = rect
+        let croppedImage = outputImage.cropped(to: rect)
         
-        guard let croppedImage = cropFilter.outputImage,
-              let cgOutput = context.createCGImage(croppedImage, from: croppedImage.extent) else { return nil }
+        guard let cgOutput = context.createCGImage(croppedImage, from: croppedImage.extent) else { return nil }
         
         return NSImage(cgImage: cgOutput, size: image.size)
     }
@@ -66,12 +63,9 @@ class ImageEffectProcessor {
         
         guard let outputImage = blurFilter.outputImage else { return nil }
         
-        let cropFilter = CIFilter.crop()
-        cropFilter.inputImage = outputImage
-        cropFilter.rectangle = rect
+        let croppedImage = outputImage.cropped(to: rect)
         
-        guard let croppedImage = cropFilter.outputImage,
-              let cgOutput = context.createCGImage(croppedImage, from: croppedImage.extent) else { return nil }
+        guard let cgOutput = context.createCGImage(croppedImage, from: croppedImage.extent) else { return nil }
         
         return NSImage(cgImage: cgOutput, size: image.size)
     }

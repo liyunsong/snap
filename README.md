@@ -38,7 +38,7 @@
 
 ### 核心技术
 - **Swift 6** + **SwiftUI** + **AppKit** 混合架构
-- **ScreenCaptureKit**: 现代高性能截图 API（macOS 13+）
+- **ScreenCaptureKit**: 现代高性能截图 API（`SCScreenshotManager` 需要 macOS 14+）
 - **KeyboardShortcuts**: 全局快捷键管理
 - **MenuBarExtra**: 菜单栏应用
 
@@ -97,7 +97,7 @@ swift run
 
 ## 系统要求
 
-- **macOS**: 13.0 (Ventura) 或更高版本
+- **macOS**: 14.0 (Sonoma) 或更高版本
 - **开发工具**: Xcode 15.0+ 或 Swift 5.9+（仅开发时需要）
 - **架构**: Apple Silicon 或 Intel Mac（Universal Binary）
 

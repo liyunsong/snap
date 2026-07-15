@@ -10,7 +10,8 @@ struct EditorView: View {
         ZStack {
             if let image = appState.capturedImage {
                 Canvas { context, size in
-                    if let nsImage = image {
+                    do {
+                        let nsImage = image
                         let imageSize = nsImage.size
                         let rect = CGRect(origin: .zero, size: imageSize)
                         
@@ -113,7 +114,7 @@ struct EditorView: View {
     }
 }
 
-struct EditorWindow: NSWindowController {
+class EditorWindow: NSWindowController {
     init(appState: AppState) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
